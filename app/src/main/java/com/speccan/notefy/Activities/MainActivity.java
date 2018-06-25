@@ -1,34 +1,49 @@
 package com.speccan.notefy.Activities;
 
-import android.app.FragmentManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
-import android.widget.TextView;
 
+import com.speccan.notefy.Activities.Fragments.AllNotesFragment;
+import com.speccan.notefy.Activities.Fragments.SettingsFragment;
+import com.speccan.notefy.Activities.Fragments.WriteNoteFragment;
 import com.speccan.notefy.R;
 
-public class MainActivity extends AppCompatActivity {
-
-    private TextView mTextMessage;
+public class MainActivity extends FragmentActivity implements SettingsFragment.OnFragmentInteractionListener {
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
+        FragmentManager mFragmentManager = getSupportFragmentManager();
+
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+            FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+
+            if(mFragmentManager.findFragmentById(R.id.framelayout_view) != null){
+                mFragmentManager.beginTransaction().remove(mFragmentManager.findFragmentById(R.id.framelayout_view)).commit();
+            }
+
             switch (item.getItemId()) {
                 case R.id.navigation_write_note:
-                    mTextMessage.setText(R.string.nav_add_note);
+                    fragmentTransaction.add(R.id.framelayout_view, new WriteNoteFragment(), "WriteNote");
+                    fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_notes:
-                    mTextMessage.setText(R.string.nav_all_notes);
-
+                    fragmentTransaction.add(R.id.framelayout_view, new AllNotesFragment(), "AllNotes");
+                    fragmentTransaction.commit();
                     return true;
                 case R.id.navigation_settings:
-                    mTextMessage.setText(R.string.nav_settings);
+                    fragmentTransaction.add(R.id.framelayout_view, new SettingsFragment(), "Settings");
+                    fragmentTransaction.commit();
                     return true;
             }
             return false;
@@ -40,11 +55,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         navigation.setSelectedItemId(R.id.navigation_notes);
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }
